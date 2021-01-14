@@ -21,9 +21,6 @@
 </template>
 
 <script>
-// import axios from 'axios'
-
-import axios from 'axios'
 
 export default {
   name: 'Login',
@@ -40,29 +37,30 @@ export default {
           {min: 3, max: 5, message: '长度在3到10个字符', trigger: 'blur'}
         ],
         password: [{required: true, message: '请输入密码', trigger: 'blur'},
-          {min: 6, max: 15, message: '长度在6到15个字符', trigger: 'blur'}]
+          {min: 5, max: 15, message: '长度在6到15个字符', trigger: 'blur'}]
       }
     }
   },
 
   methods: {
     resetLoginForm: function () {
-      // console.log(this)
       this.$refs.loginFormRef.resetFields()
     },
     login () {
-      console.log(this)
       var loginForm = this.loginForm
-      this.$refs.loginFormRef.validate(async function (valid) {
+      this.$refs.loginFormRef.validate(async valid => {
         if (!valid) {
           return
         }
 
-        const {data: res} = await axios.post('/api/login', JSON.stringify(loginForm))
+        const {data: res} = await this.$http.post('/api/login', JSON.stringify(loginForm))
         if (res.meta.status !== 200) {
-          return console.log('登入失败')
+          return this.$message.error('登入失败')
         }
-        console.log('登入成功')
+        this.$message.success('登入成功')
+        console.log(res)
+        window.sessionStorage.setItem('token', res.data.token)
+        this.$router.push('/home')
       })
     }
   }

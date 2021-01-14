@@ -7,9 +7,14 @@ import './assets/csss/global.css'
 import 'element-ui/lib/theme-chalk/index.css'
 import './assets/fonts/iconfont.css'
 import axios from 'axios'
+
 axios.defaults.baseURL = 'http://localhost:8082'
 axios.defaults.headers.post['Content-Type'] = 'application/json'
-// Vue.prototype.$http = axios
+axios.interceptors.request.use(config => {
+  config.headers.Authorization = window.sessionStorage.getItem('token')
+  return config
+})
+Vue.prototype.$http = axios
 
 Vue.config.productionTip = false
 
@@ -17,6 +22,6 @@ Vue.config.productionTip = false
 new Vue({
   el: '#app',
   router,
-  components: { App },
+  components: {App},
   template: '<App/>'
 })
