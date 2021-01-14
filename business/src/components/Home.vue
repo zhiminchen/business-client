@@ -10,11 +10,14 @@
     </el-header>
 
     <el-container>
-      <el-aside width="200px">
+      <el-aside :width="isCollapse ? '64px': '200px' ">
+        <div class="toggle-button" @click="toggleCollapse">|||</div>
         <el-menu
           background-color="#333744"
           text-color="#fff"
-          active-text-color="#ffd04b">
+          active-text-color="#409EFF" :unique-opened="true"
+          :collapse="isCollapse" :collapse-transition="false" router
+          :default-active="activePath">
 <!--          <el-submenu index="1">-->
 <!--            <template slot="title">-->
 <!--              <i class="el-icon-location"></i>-->
@@ -28,15 +31,17 @@
 <!--              </template>-->
 <!--            </el-submenu>-->
 <!--          </el-submenu>-->
-          <el-submenu :index="item.id+''" v-for="item in menulist" :key="item.id">
+          <el-submenu :index="item.id+''" v-for="item in menulist" :key="item.id" >
               <template slot="title">
-                <i class="el-icon-location"></i>
+<!--                <i class="el-icon-location"></i>-->
+                <i :class="item.icon"></i>
                 <span>{{item.authName}}</span>
               </template>
 
-            <el-menu-item index="subItem.id+''" v-for="subItem in item.children" :key="subItem.id" >
+            <el-menu-item :index="subItem.path" v-for="subItem in item.children" :key="subItem.id" @click="saveNavState(subItem.path)">
               <template slot="title">
-                <i class="el-icon-location"></i>
+                <i class="el-icon-menu"></i>
+<!--                <i :class="subItem.icon"></i>-->
                 <span>{{subItem.authName}}</span>
               </template>
 
@@ -45,7 +50,10 @@
           </el-submenu>
         </el-menu>
       </el-aside>
-      <el-main>Main</el-main>
+      <el-main>
+        <!--  路由占位符号  -->
+        <router-view></router-view>
+      </el-main>
     </el-container>
 
   </el-container>
@@ -59,10 +67,13 @@ name: "Home",
   data() {
     return {
       menulist: [] ,
+      isCollapse : false,
+      activePath: '',
     }
   },
   created() {
     this.getMenuList();
+    this.activePath = window.sessionStorage.getItem('activePath');
   },
   methods: {
     logout() {
@@ -74,8 +85,18 @@ name: "Home",
       if(res.meta.status != 200){
         return this.$message.error(res.meta.msg);
       }
+      // console.log(res.data)
       this.menulist = res.data ;
 
+    },
+    // 点击按钮切花折叠
+    toggleCollapse() {
+      this.isCollapse = !this.isCollapse;
+    },
+    // 保存链接的激活状态
+    saveNavState(activePath){
+      window.sessionStorage.setItem('activePath' , activePath)
+      this.activePath = activePath
     }
   }
 }
@@ -101,11 +122,26 @@ name: "Home",
 
   .el-aside {
     background-color: #333744;
+    .el-menu {
+      border-right: none;
+    }
   }
   .el-main {
     background-color: #EAEDF1;
   }
   .home-container {
     height: 100%;
+  }
+  .iconfont {
+    margin-right: 10px;
+  }
+  .toggle-button {
+    background-color: #4A5064;
+    font-size: 10px;
+    line-height: 24px;
+    color: #fff;
+    text-align: center;
+    letter-spacing: 0.2em;
+    cursor: pointer;
   }
 </style>
