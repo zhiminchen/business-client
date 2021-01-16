@@ -4,11 +4,12 @@ import Login from '../components/Login.vue'
 import Home from '../components/Home'
 import Welcome from '../components/Welcome'
 import Users from '../components/user/Users'
-import ElementUI, {Message} from 'element-ui'
+import ElementUI, {Message, MessageBox} from 'element-ui'
 
 Vue.use(Router)
 Vue.use(ElementUI)
 Vue.prototype.$message = Message
+Vue.prototype.$confirm = MessageBox
 
 const router = new Router({
   routes: [
